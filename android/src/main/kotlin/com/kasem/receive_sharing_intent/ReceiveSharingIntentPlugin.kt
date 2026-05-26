@@ -24,6 +24,7 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URLConnection
+import java.util.UUID
 
 private const val MESSAGES_CHANNEL = "receive_sharing_intent/messages"
 private const val EVENTS_CHANNEL_MEDIA = "receive_sharing_intent/events-media"
@@ -160,7 +161,8 @@ class ReceiveSharingIntentPlugin : FlutterPlugin, ActivityAware, MethodCallHandl
         val bitmap = retriever.getScaledFrameAtTime(-1, OPTION_CLOSEST_SYNC, 360, 360)
         retriever.release()
         if (bitmap == null) return Pair(null, null)
-        val targetFile = File(applicationContext.cacheDir, "${File(path).name}.png")
+        val originalName = File(path).nameWithoutExtension
+        val targetFile = File(applicationContext.cacheDir, "${originalName}-${UUID.randomUUID()}.png")
         FileOutputStream(targetFile).use { out ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         }
