@@ -13,6 +13,7 @@ import java.io.FileOutputStream
 import java.util.*
 import android.webkit.MimeTypeMap
 import android.util.Log
+import java.util.UUID
 
 
 object FileDirectory {
@@ -101,7 +102,11 @@ object FileDirectory {
                     val columnIndex = cursor.getColumnIndexOrThrow(column)
                     val fileName = cursor.getString(columnIndex)
                     Log.i("FileDirectory", "File name: $fileName")
-                    targetFile = File(context.cacheDir, fileName)
+                    // Add UUID to prevent filename collisions when multiple files have the same name
+                    val nameWithoutExt = fileName.substringBeforeLast('.')
+                    val ext = fileName.substringAfterLast('.', "")
+                    val uniqueName = if (ext.isNotEmpty()) "$nameWithoutExt-${UUID.randomUUID()}.$ext" else "$fileName-${UUID.randomUUID()}"
+                    targetFile = File(context.cacheDir, uniqueName)
                 }
             } finally {
                 cursor?.close()
@@ -117,7 +122,7 @@ object FileDirectory {
                     }
                 }
                 val type = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
-                targetFile = File(context.cacheDir, "${prefix}_${Date().time}.$type")
+                targetFile = File(context.cacheDir, "${prefix}_${UUID.randomUUID()}.${type}")
             }
 
             context.contentResolver.openInputStream(uri)?.use { input ->
