@@ -59,6 +59,10 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
+# SPM
+.build/
+.swiftpm/
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
